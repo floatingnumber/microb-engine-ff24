@@ -1,0 +1,88 @@
+Index: mozilla/security/manager/pki/resources/content/exceptionDialog.js
+===================================================================
+--- mozilla.orig/security/manager/pki/resources/content/exceptionDialog.js
++++ mozilla/security/manager/pki/resources/content/exceptionDialog.js
+@@ -78,45 +78,48 @@ function initExceptionDialog() {
+   gPKIBundle = srGetStrBundle("chrome://pippki/locale/pippki.properties");
+ 
+   var brandName = gBundleBrand.GetStringFromName("brandShortName");
+   
+   setText("warningText", gPKIBundle.formatStringFromName("addExceptionBrandedWarning2",
+                                                          [brandName], 1));
+   gDialog.getButton("extra1").disabled = true;
+   
+-  var args = window.arguments;
+-  if (args && args[0]) {
+-    if (args[0].location) {
+-      // We were pre-seeded with a location.
+-      document.getElementById("locationTextBox").value = args[0].location;
++  var args = window.arguments[0];
++  var paramBlock = args.QueryInterface(Components.interfaces.nsIDialogParamBlock);
++  var prefetchCert = paramBlock.GetInt(1);
++  var location = paramBlock.GetString(0);
++  if (paramBlock) {
++    if (location) {
++      // Pre-seeded with a location.
++      document.getElementById('locationTextBox').value = location;
+       document.getElementById('checkCertButton').disabled = false;
+       
+       // We can optionally pre-fetch the certificate too.  Don't do this
+       // synchronously, since it would prevent the window from appearing
+       // until the fetch is completed, which could be multiple seconds.
+       // Instead, let's use a timer to spawn the actual fetch, but update
+       // the dialog to "checking..." state right away, so that the UI
+       // is appropriately responsive.  We could include a very short lag
+       // and there would still be time for the window to draw, but bringing
+       // it up to a couple seconds still feels responsive, while also giving
+       // users who are unfamiliar with the dialog a chance to read the preamble
+       // before the dialog fills up with details about the certificate
+       // problems.  Bug 453855
+-      if (args[0].prefetchCert) {
++      if (prefetchCert) {
+         
+         gChecking = true;
+         updateCertStatus();
+         
+         window.setTimeout(checkCert, 2000);
+       }
+     }
+     
+-    // Set out parameter to false by default
+-    args[0].exceptionAdded = false; 
++    // Set out parameter "exceptionAdded" to false by default
++    paramBlock.SetInt(0, 0);
+   }
+ }
+ 
+ // returns true if found and global status could be set
+ function findRecentBadCert(uri) {
+   try {
+     var recentCertsSvc = Components.classes["@mozilla.org/security/recentbadcerts;1"]
+                          .getService(Components.interfaces.nsIRecentBadCertsService);
+@@ -369,19 +372,23 @@ function addException() {
+ 
+   var uri = getURI();
+   overrideService.rememberValidityOverride(
+     uri.asciiHost, uri.port,
+     gCert,
+     flags,
+     !shouldStorePermanently);
+   
+-  var args = window.arguments;
+-  if (args && args[0])
+-    args[0].exceptionAdded = true;
++  var args = window.arguments[0];
++  var paramBlock = args.QueryInterface(Components.interfaces.nsIDialogParamBlock);
++  if (args && paramBlock)
++  {
++    // Set the exceptionAdded to true
++    paramBlock.SetInt(0, 1);
++  }
+   
+   gDialog.acceptDialog();
+ }
+ 
+ /**
+  * Returns true if the private browsing mode is currently active and
+  * we have been instructed to handle it.
+  */

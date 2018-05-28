@@ -1,0 +1,31 @@
+#Bug 376256 – NSPR cross-compilation with dpkg-cross is fail
+Index: mozilla/nsprpub/config/Makefile.in
+===================================================================
+--- mozilla.orig/nsprpub/config/Makefile.in
++++ mozilla/nsprpub/config/Makefile.in
+@@ -137,16 +137,25 @@ export:: $(TARGETS)
+ 	rm -f $(dist_bindir)/nspr-config
+ 
+ ifdef WRAP_SYSTEM_INCLUDES
+ export::
+ 	if test ! -d system_wrappers; then mkdir system_wrappers; fi
+ 	$(PERL) $(srcdir)/make-system-wrappers.pl system_wrappers < $(srcdir)/system-headers
+ 	$(INSTALL) system_wrappers $(dist_includedir)
+ endif
++ifdef CROSS_COMPILE
++$(OBJDIR)/%.$(OBJ_SUFFIX): %.c
++	@$(MAKE_OBJDIR)
++	$(HOST_CC) -o $@ -c $(CFLAGS) $<
++endif
+ 
+ $(OBJDIR)/%$(PROG_SUFFIX): $(OBJDIR)/%.$(OBJ_SUFFIX)
+ 	@$(MAKE_OBJDIR)
++ifdef CROSS_COMPILE
++	$(HOST_CC) $(XCFLAGS) $< $(LDFLAGS) $(XLDOPTS) $(OUTOPTION)$@
++else
+ 	$(CC) $(XCFLAGS) $< $(LDFLAGS) $(XLDOPTS) $(OUTOPTION)$@
++endif
+ 
+ install:: nspr.m4
+ 	$(NSINSTALL) -D $(DESTDIR)$(datadir)/aclocal
+ 	$(NSINSTALL) -t -m 0644 $< $(DESTDIR)$(datadir)/aclocal

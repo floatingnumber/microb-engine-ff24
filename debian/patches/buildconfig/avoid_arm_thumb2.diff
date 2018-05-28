@@ -1,0 +1,29 @@
+Index: mozilla/configure.in
+===================================================================
+--- mozilla.orig/configure.in
++++ mozilla/configure.in
+@@ -6490,16 +6490,24 @@ if test $MOZ_PLATFORM_MAEMO; then
+          AC_MSG_ERROR([Hildon FM-2 is required when building for Maemo])
+       fi
+    fi
+ 
+    AC_SUBST(MOZ_PLATFORM_MAEMO_LIBS)
+    AC_SUBST(MOZ_PLATFORM_MAEMO_CFLAGS)
+ fi
+ 
++MOZ_ARG_WITHOUT_BOOL(arm-thumb2,
++                     [  --without-arm-thumb2        don't use arm thumb2 instructions)],
++                         AVOID_ARM_THUMB2="yes")
++if test "$AVOID_ARM_THUMB2" = "yes"; then
++    NJ_FORCE_NO_ARM_THUMB2=1
++    AC_DEFINE(NJ_FORCE_NO_ARM_THUMB2)
++fi
++
+ dnl ========================================================
+ dnl = faststripe theme
+ dnl ========================================================
+ MOZ_ARG_ENABLE_BOOL(faststripe,
+ [  --enable-faststripe  Use faststripe theme],
+     MOZ_THEME_FASTSTRIPE=1,
+     MOZ_THEME_FASTSTRIPE= )
+ AC_SUBST(MOZ_THEME_FASTSTRIPE)

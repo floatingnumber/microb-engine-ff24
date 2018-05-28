@@ -1,0 +1,25 @@
+# BMO 376279. Wrong detection of OS_TEST in CROSS_COMPILE configuration. Patch imported from the bug.
+Index: mozilla/security/coreconf/arch.mk
+===================================================================
+--- mozilla.orig/security/coreconf/arch.mk
++++ mozilla/security/coreconf/arch.mk
+@@ -61,17 +61,19 @@ else
+ endif
+ 
+ OS_ARCH := $(subst /,_,$(shell uname -s))
+ 
+ #
+ # Attempt to differentiate between sparc and x86 Solaris
+ #
+ 
++ifndef OS_TEST
+ OS_TEST := $(shell uname -m)
++endif
+ ifeq ($(OS_TEST),i86pc)
+     OS_RELEASE := $(shell uname -r)_$(OS_TEST)
+ else
+     OS_RELEASE := $(shell uname -r)
+ endif
+ 
+ #
+ # Force the IRIX64 machines to use IRIX.

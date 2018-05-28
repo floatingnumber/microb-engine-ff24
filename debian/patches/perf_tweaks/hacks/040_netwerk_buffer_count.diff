@@ -1,0 +1,27 @@
+# May be it is wrong
+# appears after performance crazy hacking ;)
+Index: mozilla/netwerk/base/src/nsNetSegmentUtils.h
+===================================================================
+--- mozilla.orig/netwerk/base/src/nsNetSegmentUtils.h
++++ mozilla/netwerk/base/src/nsNetSegmentUtils.h
+@@ -40,18 +40,18 @@
+ 
+ #include "necko-config.h"
+ #include "nsIOService.h"
+ 
+ #ifdef NECKO_SMALL_BUFFERS
+ #define NET_DEFAULT_SEGMENT_SIZE  2048
+ #define NET_DEFAULT_SEGMENT_COUNT 4
+ #else
+-#define NET_DEFAULT_SEGMENT_SIZE  4096
+-#define NET_DEFAULT_SEGMENT_COUNT 16
++#define NET_DEFAULT_SEGMENT_SIZE  16384
++#define NET_DEFAULT_SEGMENT_COUNT 64
+ #endif
+ 
+ /**
+  * returns preferred allocator for given segment size.  NULL implies
+  * system allocator.  this result can be used when allocating a pipe.
+  */
+ static inline nsIMemory *
+ net_GetSegmentAlloc(PRUint32 segsize)

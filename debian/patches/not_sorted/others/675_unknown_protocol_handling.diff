@@ -1,0 +1,33 @@
+# Setting dialog title as "Unknown Protocol" if the URL scheme is unsupported.
+# Fixed bug#65361:invalid_protocol is not shown in most variants.
+# This is wrong, nsIExternalProtocolService need to be implemented for maemo or
+# toolkit/system/gnome module enabled + each application enable "/desktop/gnome/url-handlers/[protocol]/command" gconf keys
+# also see https://bugzilla.mozilla.org/show_bug.cgi?id=33282
+Index: mozilla/docshell/base/nsDocShell.cpp
+===================================================================
+--- mozilla.orig/docshell/base/nsDocShell.cpp
++++ mozilla/docshell/base/nsDocShell.cpp
+@@ -3308,18 +3308,22 @@ nsDocShell::DisplayLoadError(nsresult aE
+         // asserts). Satisfy that assertion now since GetDocument will force
+         // creation of one if it hasn't already been created.
+         nsCOMPtr<nsPIDOMWindow> pwin(do_QueryInterface(mScriptGlobal));
+         if (pwin) {
+             nsCOMPtr<nsIDOMDocument> doc;
+             pwin->GetDocument(getter_AddRefs(doc));
+         }
+ 
++        nsAutoString title;
++        if (NS_ERROR_UNKNOWN_PROTOCOL == aError) {
++            title.Insert(NS_LITERAL_STRING("Unknown Protocol"), 0);
++        }
+         // Display a message box
+-        prompter->Alert(nsnull, messageStr.get());
++        prompter->Alert(title.get(), messageStr.get());
+     }
+ 
+     return NS_OK;
+ }
+ 
+ 
+ NS_IMETHODIMP
+ nsDocShell::LoadErrorPage(nsIURI *aURI, const PRUnichar *aURL,

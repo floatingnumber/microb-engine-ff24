@@ -71,7 +71,7 @@ endif
 
 SH := /bin/sh
 PERL ?= perl
-PYTHON ?= python
+PYTHON ?= python2.7
 
 CONFIG_GUESS_SCRIPT := $(wildcard $(TOPSRCDIR)/build/autoconf/config.guess)
 ifdef CONFIG_GUESS_SCRIPT

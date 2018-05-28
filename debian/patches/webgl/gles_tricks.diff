@@ -1,0 +1,22 @@
+diff -r b542301d0484 content/canvas/src/WebGLContextGL.cpp
+--- a/content/canvas/src/WebGLContextGL.cpp	Mon Dec 07 00:59:15 2009 +0200
++++ b/content/canvas/src/WebGLContextGL.cpp	Mon Dec 07 01:38:52 2009 +0200
+@@ -2848,6 +2848,18 @@ WebGLContext::ShaderSource(nsIWebGLShade
+     MakeContextCurrent();
+ 
+     NS_LossyConvertUTF16toASCII asciisrc(source);
++#ifdef USE_GLES2
++    int startIDX = 0;
++    int endIDX = 0;
++
++    if (kNotFound != (startIDX=asciisrc.Find("#version ", PR_FALSE))) {
++        endIDX = startIDX + 12; // skip "#version XXX"
++        asciisrc.Cut(startIDX, endIDX);
++    }
++
++    if (kNotFound == (startIDX=asciisrc.Find("precision highp float;", PR_FALSE)))
++        asciisrc.Insert("precision highp float;\n", 0);
++#endif
+     const char *p = asciisrc.get();
+ 
+     gl->fShaderSource(shader, 1, &p, NULL);

@@ -1,0 +1,40 @@
+Index: mozilla/toolkit/content/widgets/text.xml
+===================================================================
+--- mozilla.orig/toolkit/content/widgets/text.xml
++++ mozilla/toolkit/content/widgets/text.xml
+@@ -22,16 +22,17 @@
+     </implementation>
+   </binding>
+ 
+   <binding id="text-label" extends="chrome://global/content/bindings/text.xml#text-base">
+     <implementation implements="nsIDOMXULLabelElement">
+       <property name="accessKey">
+         <getter>
+           <![CDATA[
++            return null;
+             var accessKey = this.getAttribute('accesskey');
+             return accessKey ? accessKey[0] : null;
+           ]]>
+         </getter>
+         <setter>
+           <![CDATA[
+             this.setAttribute('accesskey', val);
+             return val;
+@@ -220,16 +221,17 @@
+       </field>
+       <field name="mInsertSeparator">true</field>
+       <field name="mAlwaysAppendAccessKey">false</field>
+ 
+       <property name="accessKey">
+         <getter>
+           <![CDATA[
+             var accessKey = null;
++            return accessKey;
+             var labeledEl = this.labeledControlElement;
+             if (labeledEl) {
+               accessKey = labeledEl.getAttribute('accesskey');
+             }
+             if (!accessKey) {
+               accessKey = this.getAttribute('accesskey');
+             }
+             return accessKey ? accessKey[0] : null;

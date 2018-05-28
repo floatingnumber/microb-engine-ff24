@@ -1,0 +1,58 @@
+# Hide all not used symbols from engine
+Index: mozilla/toolkit/library/libxul-export.map
+===================================================================
+--- /dev/null
++++ mozilla/toolkit/library/libxul-export.map
+@@ -0,0 +1,30 @@
++{
++  global:
++	_GLOBAL_OFFSET_TABLE_;
++	__exidx_end;
++	_bss_end__;
++	__bss_start__;
++	__dso_handle;
++	__libc_csu_fini;
++	__exidx_start;
++	_init;
++	__bss_end__;
++	_start;
++	__libc_csu_init;
++	__end__;
++	_fini;
++	_edata;
++	_end;
++	_IO_stdin_used;
++	__data_start;
++	NS_*;
++	CRMF_*;
++	XRE_*;
++   _ZTV14nsGetInterface;
++   _ZNK12nsIPresShell18GetRootScrollFrameE;
++   gtk_moz_*;
++   *gfx*;
++   *XRE*;
++   *QGecko*;
++  local: *;
++};
+Index: mozilla/toolkit/library/libxul-rules.mk
+===================================================================
+--- mozilla.orig/toolkit/library/libxul-rules.mk
++++ mozilla/toolkit/library/libxul-rules.mk
+@@ -83,14 +83,17 @@ ifeq ($(MOZ_WIDGET_TOOLKIT),windows)
+ ifneq ($(OS_ARCH),WINCE)
+ OS_LIBS += $(call EXPAND_LIBNAME,usp10 oleaut32)
+ endif
+ endif
+ ifneq (,$(filter $(MOZ_WIDGET_TOOLKIT),mac cocoa))
+ EXTRA_DSO_LDOPTS += -lcups
+ endif
+ 
++# Hack for Maemo: exporting only limited set of symbols for Linux
++EXTRA_DSO_LDOPTS += -Wl,--version-script=$(srcdir)/libxul-export.map
++
+ export:: dlldeps.cpp
+ 
+ dlldeps.cpp: $(topsrcdir)/xpcom/build/dlldeps.cpp
+ 	$(INSTALL) $^ .
+ 
+ GARBAGE += dlldeps.cpp

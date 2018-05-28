@@ -1,0 +1,29 @@
+# https://bugzilla.mozilla.org/show_bug.cgi?id=469667
+#
+Index: mozilla/widget/src/gtk2/nsAppShell.cpp
+===================================================================
+--- mozilla.orig/widget/src/gtk2/nsAppShell.cpp
++++ mozilla/widget/src/gtk2/nsAppShell.cpp
+@@ -150,13 +150,22 @@ failed:
+ 
+ void
+ nsAppShell::ScheduleNativeEventCallback()
+ {
+     unsigned char buf[] = { NOTIFY_TOKEN };
+     write(mPipeFDs[1], buf, 1);
+ }
+ 
++static guint timerID;
++static gboolean watchdog_timeout(gpointer data)
++{
++    timerID = 0;
++    return FALSE;
++}
++
+ PRBool
+ nsAppShell::ProcessNextNativeEvent(PRBool mayWait)
+ {
++    if (mayWait && !timerID && !g_main_context_pending(NULL))
++        timerID = g_timeout_add(1000, watchdog_timeout, 0);
+     return g_main_context_iteration(NULL, mayWait);
+ }
