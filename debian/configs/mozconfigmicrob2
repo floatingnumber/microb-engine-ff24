@@ -38,7 +38,7 @@ ac_add_options --disable-ogg
 #ac_add_options --enable-ogg
 #ac_add_options --disable-wave
 ac_add_options --enable-wave
-ac_add_options --enable-gstreamer
+ac_add_options --disable-gstreamer
 
    #* Micro Base
 ac_add_options --with-embedding-profile=basic
