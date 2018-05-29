@@ -418,15 +418,16 @@ AudioStream* AudioStream::AllocateStream()
 
 int AudioStream::MaxNumberOfChannels()
 {
-  uint32_t maxNumberOfChannels, rv;
+#if defined(MOZ_CUBEB)
+  uint32_t maxNumberOfChannels;
 
-  rv = cubeb_get_max_channel_count(GetCubebContext(), &maxNumberOfChannels);
-
-  if (rv != CUBEB_OK) {
-    return 0;
+  if (cubeb_get_max_channel_count(GetCubebContext(),
+                                  &maxNumberOfChannels) == CUBEB_OK) {
+    return static_cast<int>(maxNumberOfChannels);
   }
+#endif
 
-  return static_cast<int>(maxNumberOfChannels);
+  return 0;
 }
 
 static void SetUint16LE(uint8_t* aDest, uint16_t aValue)
