@@ -178,7 +178,7 @@ nsGNOMERegistry::GetFromType(const nsACString& aMIMEType)
   // the default maemo domain-name to try and translate the string into the operating 
   // system's native language.
   const char kDefaultTextDomain [] = "maemo-af-desktop";
-  nsAutoCString realName (dgettext(kDefaultTextDomain, PromiseFlatCString(name).get()));
+  nsAutoCString realName (dgettext(kDefaultTextDomain, name.get()));
   mimeInfo->SetDefaultDescription(NS_ConvertUTF8toUTF16(realName));
 #else
   mimeInfo->SetDefaultDescription(NS_ConvertUTF8toUTF16(name));
