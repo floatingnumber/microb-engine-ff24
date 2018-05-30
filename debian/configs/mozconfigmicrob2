@@ -74,7 +74,6 @@ ac_add_options --enable-xpinstall
 ac_add_options --enable-jarmodule
 
    #* Should be enabled in Micro base
-ac_add_options --enable-necko-protocols="about data http file res ftp viewsource"
 ac_add_options --enable-chrome-format=flat
 ac_add_options --enable-extensions="gnomevfs"
 ac_add_options --enable-image-decoders="png gif jpeg bmp icon"
