@@ -265,14 +265,16 @@ PR_IMPLEMENT(PRInt32) PR_GetNumberOfProcessors( void )
 */
 PR_IMPLEMENT(PRUint64) PR_GetPhysicalMemorySize(void)
 {
-    PRUint64 bytes = 0;
+    static PRUint64 bytes = 0;
 
 #if defined(LINUX) || defined(SOLARIS)
 
-    long pageSize = sysconf(_SC_PAGESIZE);
-    long pageCount = sysconf(_SC_PHYS_PAGES);
-    if (pageSize >= 0 && pageCount >= 0)
-        bytes = (PRUint64) pageSize * pageCount;
+    if (!bytes) {
+        long pageSize = sysconf(_SC_PAGESIZE);
+        long pageCount = sysconf(_SC_PHYS_PAGES);
+        if (pageSize >= 0 && pageCount >= 0)
+            bytes = (PRUint64) pageSize * pageCount;
+    }
 
 #elif defined(NETBSD) || defined(OPENBSD)
 

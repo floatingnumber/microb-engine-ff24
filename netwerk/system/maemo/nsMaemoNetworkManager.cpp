@@ -29,7 +29,8 @@ enum InternalState
 {
   InternalState_Invalid = -1,
   InternalState_Disconnected,
-  InternalState_Connected
+  InternalState_Connected,
+  InternalState_Shutdown
 };
 
 static InternalState gInternalState = InternalState_Invalid;
@@ -72,13 +73,8 @@ connection_event_callback(ConIcConnection *aConnection,
 bool
 nsMaemoNetworkManager::OpenConnectionSync()
 {
-  if (NS_IsMainThread() || !gConnection)
+  if (!gConnection)
     return false;
-
-  // protect gInternalState.  This also allows us
-  // to block and wait in this method on this thread
-  // until our callback on the main thread.
-  ReentrantMonitorAutoEnter mon(*gReentrantMonitor);
 
   gConnectionCallbackInvoked = false;
 
@@ -87,8 +83,24 @@ nsMaemoNetworkManager::OpenConnectionSync()
     g_error("openConnectionSync: Error while connecting. %p \n",
             (void*) PR_GetCurrentThread());
 
-  while (!gConnectionCallbackInvoked)
-    mon.Wait();
+  if (NS_IsMainThread())  {
+    // when called from the mainthread we need to keep
+    // processing the events in order to receive our own
+    // callback
+    while (!gConnectionCallbackInvoked && gInternalState != InternalState_Shutdown)
+    {
+      PR_Sleep(PR_SecondsToInterval(1));
+      g_main_context_iteration(0,false);
+    }
+  }  else  {
+    // protect gInternalState.  This also allows us
+    // to block and wait in this method on this thread
+    // until our callback on the main thread.
+    MonitorAutoEnter mon(*gMonitor);
+
+    while (!gConnectionCallbackInvoked && gInternalState != InternalState_Shutdown)
+      mon.Wait();
+  }
 
   if (gInternalState == InternalState_Connected)
     return true;
@@ -106,7 +118,11 @@ nsMaemoNetworkManager::CloseConnection()
 bool
 nsMaemoNetworkManager::IsConnected()
 {
+#ifdef __arm__
   return gInternalState == InternalState_Connected;
+#else
+  return true;
+#endif
 }
 
 bool
@@ -124,6 +140,8 @@ nsMaemoNetworkManager::Startup()
   gReentrantMonitor = new ReentrantMonitor("MaemoAutodialer");
   if (!gReentrantMonitor)
     return false;
+
+  gInternalState = InternalState_Invalid;
 
   DBusError error;
   dbus_error_init(&error);
@@ -162,7 +180,7 @@ nsMaemoNetworkManager::Shutdown()
   if (gReentrantMonitor) {
     // notify anyone waiting
     ReentrantMonitorAutoEnter mon(*gReentrantMonitor);
-    gInternalState = InternalState_Invalid;    
+    gInternalState = InternalState_Shutdown;   
     mon.Notify();
   }
   

@@ -417,6 +417,7 @@ endif
 endif
 endif
 
+EXTRA_DSO_LDOPTS += -Wl,--version-script=$(srcdir)/libxul-export.map
 
 ifdef MOZ_CUBEB
 ifdef MOZ_ALSA

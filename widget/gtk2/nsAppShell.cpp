@@ -129,8 +129,17 @@ nsAppShell::ScheduleNativeEventCallback()
     write(mPipeFDs[1], buf, 1);
 }
 
+static guint timerID;
+static gboolean watchdog_timeout(gpointer data)
+{
+    timerID = 0;
+    return FALSE;
+}
+
 bool
 nsAppShell::ProcessNextNativeEvent(bool mayWait)
 {
+    if (mayWait && !timerID && !g_main_context_pending(NULL))
+        timerID = g_timeout_add(1000, watchdog_timeout, 0);
     return g_main_context_iteration(NULL, mayWait);
 }

@@ -24,7 +24,7 @@
 <script type="application/javascript" src="chrome://pippki/content/viewCertDetails.js"/>
 <script type="application/javascript" src="chrome://pippki/content/pippki.js"/>
 
-  <tabbox>
+  <tabbox flex="1" style="overflow: auto">
     <tabs>
       <tab id="general_tab" label="&certmgr.detail.general_tab.title;"
            accesskey="&certmgr.detail.general_tab.accesskey;"/>

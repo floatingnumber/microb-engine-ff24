@@ -67,6 +67,11 @@ interface nsIAppShell : nsISupports
   void resumeNative();
 
   /**
+   * Will call DoNextNativeEvent for proceeding native event loop
+   */
+  void wakeupNative(in boolean mayWait);
+
+  /**
    * The current event loop nesting level.
    */
   readonly attribute unsigned long eventloopNestingLevel;

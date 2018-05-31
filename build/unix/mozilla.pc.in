@@ -1,0 +1,14 @@
+prefix=%prefix%
+exec_prefix=%exec_prefix%
+libdir=%libdir%
+includedir=%includedir%
+idldir=%idldir%
+staticlibs=${libdir}/static/libxul.a ${libdir}/static/libxpcom.a ${libdir}/static/libmozjs.a ${libdir}/static/lib/libcrmf.a -lnss3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl -lXt
+
+Name: XPCOM
+Description: The Mozilla Cross Platform Component Library
+Version: %MOZILLA_VERSION%
+Requires: %NSPR_NAME% >= %NSPR_VERSION%
+Libs: -L${libdir} -lplds4 -lplc4 -lnspr4 -lpthread -ldl -lxpcom -lxul -lnss3 %SUPERWIN_LIBS%
+Cflags: -I${includedir} -I${includedir}/xpcom -I${includedir}/string -I${includedir}/dom -I${includedir}/chrome -I${includedir}/locale -I${includedir}/webbrowserpersist -I${includedir}/find -I${includedir}/docshell -I${includedir}/webshell -I${includedir}/widget -I${includedir}/content -I${includedir}/browser -I${includedir}/necko -I${includedir}/pref -I${includedir}/history -I${includedir}/gfx -I${includedir}/webbrowserpersist -I${includedir}/layout -I${includedir}/webbrwsr -I${includedir}/shistory -I${includedir}/txtsvc -I${includedir}/windowwatcher -I${includedir}/appcomps -I${includedir}/nspr -I${includedir}/xpcom_obsolete -I${includedir}/zoomer -I${includedir}/minimo -I${includedir}/chardet -I${includedir}/exthandler -I${includedir}/uriloader  -I${includedir}/mimetype -I${includedir}/pipnss -I${includedir}/embed_base -I${includedir}/profdirserviceprovider  -I${includedir}/nkcache -I${includedir}/embedcomponents -I${includedir}/intl -I${includedir}/gtkembedmoz -I${includedir}/mork -I${includedir}/imglib2 -I${includedir}/unicharutil -I${includedir}/xulapp -I${includedir}/editor -I${includedir}/composer -I${includedir}/cookie -I${includedir}/pipboot -I${includedir}/view -I${includedir}/extensions -I${includedir}/toolkitcomps -I${includedir}/rdf
+

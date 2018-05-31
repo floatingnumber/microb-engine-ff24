@@ -665,6 +665,10 @@ nsIOService::GetOffline(bool *offline)
 NS_IMETHODIMP
 nsIOService::SetOffline(bool offline)
 {
+    if (!mManageOfflineStatus) {
+        return NS_OK;
+    }
+
     // When someone wants to go online (!offline) after we got XPCOM shutdown
     // throw ERROR_NOT_AVAILABLE to prevent return to online state.
     if ((mShutdown || mOfflineForProfileChange) && !offline)

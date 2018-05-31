@@ -4353,7 +4353,9 @@ nsDocShell::DisplayLoadError(nsresult aError, nsIURI *aURI,
             break;
         case NS_ERROR_OFFLINE:
             // Doc failed to load because we are offline.
+#ifndef MOZ_ENABLE_LIBCONIC
             error.AssignLiteral("netOffline");
+#endif
             break;
         case NS_ERROR_DOCUMENT_IS_PRINTMODE:
             // Doc navigation attempted while Printing or Print Preview
@@ -9377,6 +9379,28 @@ nsDocShell::DoURILoad(nsIURI * aURI,
     aURI->GetAsciiSpec(urlSpec);
     MOZ_EVENT_TRACER_NAME_OBJECT(this, urlSpec.BeginReading());
     MOZ_EVENT_TRACER_EXEC(this, "docshell::pageload");
+#endif
+
+#ifdef MOZ_ENABLE_LIBCONIC
+    //avoid requesting the connection if
+    // - we are online
+    // - we are a subframe
+    // - we check for offline protocolls
+    // - we display a error page
+
+    nsCString scheme;
+    aURI->GetScheme(scheme); 
+
+    if (NS_IsOffline() &&
+        !IsFrame() &&
+        !scheme.EqualsIgnoreCase("resource") &&
+        !scheme.EqualsIgnoreCase("about") &&
+        !scheme.EqualsIgnoreCase("file") &&
+        !scheme.EqualsIgnoreCase("data") &&
+        !scheme.EqualsIgnoreCase("chrome") &&
+        mLoadType != LOAD_ERROR_PAGE)  {
+        NS_RequestConnection();
+    }
 #endif
 
     nsresult rv;

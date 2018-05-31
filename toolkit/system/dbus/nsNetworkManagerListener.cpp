@@ -65,6 +65,12 @@ nsNetworkManagerListener::GetLinkType(uint32_t *aLinkType)
 }
 
 nsresult
+nsNetworkManagerListener::RequestConnection()
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+nsresult
 nsNetworkManagerListener::Init()
 {
   mDBUS = nsDBusService::Get();

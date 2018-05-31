@@ -3,12 +3,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-MOZ_APP_NAME=xulrunner
-MOZ_APP_DISPLAYNAME=XULRunner
+MOZ_APP_NAME=microb-engine
+MOZ_APP_DISPLAYNAME=MicroB
 MOZ_UPDATER=1
 MOZ_XULRUNNER=1
 MOZ_CHROME_FILE_FORMAT=omni
+if test $MOZ_APP_VERSION; then
+  MOZ_APP_VERSION=$MOZ_APP_VERSION
+else
 MOZ_APP_VERSION=$MOZILLA_VERSION
+fi
 MOZ_PLACES=1
 MOZ_EXTENSIONS_DEFAULT=" gio"
 MOZ_URL_CLASSIFIER=1

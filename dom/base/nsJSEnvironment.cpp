@@ -82,6 +82,8 @@
 #include "mozilla/dom/CanvasRenderingContext2DBinding.h"
 
 #include "GeckoProfiler.h"
+#include "nsWidgetsCID.h"
+#include "nsIAppShell.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -196,6 +198,7 @@ static int32_t sContextCount;
 
 static PRTime sMaxScriptRunTime;
 static PRTime sMaxChromeScriptRunTime;
+static PRBool sWakeUpNativeLoopOnJS;
 
 static nsIScriptSecurityManager *sSecurityManager;
 
@@ -701,6 +704,20 @@ nsJSContext::DOMOperationCallback(JSContext *cx)
   if (!ctx) {
     // Can happen; see bug 355811
     return JS_TRUE;
+  }
+
+  nsCOMPtr<nsIAppShell> appShell = do_GetService(kAppShellCID);
+  if (appShell && sWakeUpNativeLoopOnJS) {
+    nsCOMPtr<nsPIDOMWindow> win(do_QueryInterface(ctx->GetGlobalObject()));
+    // Check for existing docshell before possible window close event
+    PRBool docshell = (win && win->GetDocShell());
+
+    ctx->SetScriptsEnabled(PR_FALSE, PR_FALSE);
+    appShell->WakeupNative(PR_FALSE);
+    ctx->SetScriptsEnabled(PR_TRUE, PR_FALSE);
+
+    if (docshell && !win->GetDocShell())
+      return JS_FALSE;
   }
 
   // XXX Save the operation callback time so we can restore it after the GC,
@@ -3203,6 +3220,13 @@ ReportAllJSExceptionsPrefChangedCallback(const char* aPrefName, void* aClosure)
 }
 
 static int
+WakeUpNativeLoopOnJSPrefChangedCallback(const char* aPrefName, void* aClosure)
+{
+  sWakeUpNativeLoopOnJS = nsContentUtils::GetBoolPref(aPrefName, PR_FALSE);
+  return 0;
+}
+
+static int
 SetMemoryHighWaterMarkPrefChangedCallback(const char* aPrefName, void* aClosure)
 {
   int32_t highwatermark = Preferences::GetInt(aPrefName, 128);
@@ -3392,6 +3416,9 @@ nsJSRuntime::Init()
 
   Preferences::RegisterCallbackAndCall(ReportAllJSExceptionsPrefChangedCallback,
                                        "dom.report_all_js_exceptions");
+
+  Preferences::RegisterCallbackAndCall(WakeUpNativeLoopOnJSPrefChangedCallback,
+                                       "dom.wakeup_native_on_js");
 
   Preferences::RegisterCallbackAndCall(SetMemoryHighWaterMarkPrefChangedCallback,
                                        "javascript.options.mem.high_water_mark");

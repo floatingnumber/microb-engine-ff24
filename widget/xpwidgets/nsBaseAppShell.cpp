@@ -208,6 +208,12 @@ nsBaseAppShell::ResumeNative()
 }
 
 NS_IMETHODIMP
+nsBaseAppShell::WakeupNative(PRBool mayWait)
+{
+  return OnProcessNextEvent(nsnull, PR_FALSE, 0);
+}
+
+NS_IMETHODIMP
 nsBaseAppShell::GetEventloopNestingLevel(uint32_t* aNestingLevelResult)
 {
   NS_ENSURE_ARG_POINTER(aNestingLevelResult);

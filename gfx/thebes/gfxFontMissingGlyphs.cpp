@@ -185,76 +185,20 @@ gfxFontMissingGlyphs::DrawMissingGlyph(gfxContext    *aContext,
     gfxFloat halfBorderWidth = BOX_BORDER_WIDTH / 2.0;
     gfxFloat borderLeft = aRect.X() + BOX_HORIZONTAL_INSET + halfBorderWidth;
     gfxFloat borderRight = aRect.XMost() - BOX_HORIZONTAL_INSET - halfBorderWidth;
-    gfxRect borderStrokeRect(borderLeft, aRect.Y() + halfBorderWidth,
-                             borderRight - borderLeft,
-                             aRect.Height() - 2.0 * halfBorderWidth);
-    if (!borderStrokeRect.IsEmpty()) {
-        aContext->SetLineWidth(BOX_BORDER_WIDTH);
-        aContext->SetDash(gfxContext::gfxLineSolid);
-        aContext->SetLineCap(gfxContext::LINE_CAP_SQUARE);
-        aContext->SetLineJoin(gfxContext::LINE_JOIN_MITER);
-        gfxRGBA color = currentColor;
-        color.a *= BOX_BORDER_OPACITY;
-        aContext->SetDeviceColor(color);
-        aContext->NewPath();
-        aContext->Rectangle(borderStrokeRect);
+    gfxFloat borderTop = aRect.Y() + halfBorderWidth;
+    gfxFloat borderBottom = aRect.Y() - halfBorderWidth + aRect.Height();
 
-#ifdef MOZ_GFX_OPTIMIZE_MOBILE
-        aContext->Fill();
-#else
-        aContext->Stroke();
-#endif
-    }
-
-#ifndef MOZ_GFX_OPTIMIZE_MOBILE
-    gfxPoint center(aRect.X() + aRect.Width() / 2,
-                    aRect.Y() + aRect.Height() / 2);
-    gfxFloat halfGap = HEX_CHAR_GAP / 2.0;
-    gfxFloat top = -(MINIFONT_HEIGHT + halfGap);
-    aContext->SetDeviceColor(currentColor);
-    aContext->Translate(center);
-    // We always want integer scaling, otherwise the "bitmap" glyphs will look
-    // even uglier than usual when zoomed
-    int32_t scale =
-        std::max<int32_t>(1, nsDeviceContext::AppUnitsPerCSSPixel() /
-                             aAppUnitsPerDevPixel);
-    aContext->Scale(gfxFloat(scale), gfxFloat(scale));
-    if (aChar < 0x10000) {
-        if (aRect.Width() >= 2 * (MINIFONT_WIDTH + HEX_CHAR_GAP) &&
-            aRect.Height() >= 2 * MINIFONT_HEIGHT + HEX_CHAR_GAP) {
-            // Draw 4 digits for BMP
-            gfxFloat left = -(MINIFONT_WIDTH + halfGap);
-            DrawHexChar(aContext,
-                        gfxPoint(left, top), (aChar >> 12) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(halfGap, top), (aChar >> 8) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(left, halfGap), (aChar >> 4) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(halfGap, halfGap), aChar & 0xF);
-        }
-    } else {
-        if (aRect.Width() >= 3 * (MINIFONT_WIDTH + HEX_CHAR_GAP) &&
-            aRect.Height() >= 2 * MINIFONT_HEIGHT + HEX_CHAR_GAP) {
-            // Draw 6 digits for non-BMP
-            gfxFloat first = -(MINIFONT_WIDTH * 1.5 + HEX_CHAR_GAP);
-            gfxFloat second = -(MINIFONT_WIDTH / 2.0);
-            gfxFloat third = (MINIFONT_WIDTH / 2.0 + HEX_CHAR_GAP);
-            DrawHexChar(aContext,
-                        gfxPoint(first, top), (aChar >> 20) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(second, top), (aChar >> 16) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(third, top), (aChar >> 12) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(first, halfGap), (aChar >> 8) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(second, halfGap), (aChar >> 4) & 0xF);
-            DrawHexChar(aContext,
-                        gfxPoint(third, halfGap), aChar & 0xF);
-        }
-    }
-#endif
+    aContext->SetLineWidth(BOX_BORDER_WIDTH);
+    aContext->SetDash(gfxContext::gfxLineSolid);
+    aContext->SetLineCap(gfxContext::LINE_CAP_SQUARE);
+    aContext->SetLineJoin(gfxContext::LINE_JOIN_MITER);
+    gfxRGBA color = currentColor;
+    color.a *= BOX_BORDER_OPACITY;
+    aContext->SetDeviceColor(color);
+    aContext->NewPath();
+    aContext->Line(gfxPoint(borderLeft, borderTop), gfxPoint(borderRight, borderTop));
+    aContext->Line(gfxPoint(borderLeft, borderBottom), gfxPoint(borderRight, borderBottom));
+    aContext->Stroke();
 
     aContext->Restore();
 }

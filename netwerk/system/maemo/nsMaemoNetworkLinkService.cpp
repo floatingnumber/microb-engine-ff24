@@ -54,10 +54,16 @@ nsMaemoNetworkLinkService::Observe(nsISupports *aSubject,
                                    const char *aTopic,
                                    const PRUnichar *aData)
 {
-  if (!strcmp(aTopic, "xpcom-shutdown"))
+  if (!strcmp(aTopic, "quit-application"))
     Shutdown();
 
   return NS_OK;
+}
+
+NS_IMETHODIMP
+nsMaemoNetworkLinkService::RequestConnection()
+{
+  return nsMaemoNetworkManager::OpenConnectionSync() ? NS_OK : NS_ERROR_FAILURE;
 }
 
 nsresult
@@ -68,7 +74,7 @@ nsMaemoNetworkLinkService::Init(void)
   if (!observerService)
     return NS_ERROR_FAILURE;
 
-  nsresult rv = observerService->AddObserver(this, "xpcom-shutdown", false);
+  nsresult rv = observerService->AddObserver(this, "quit-application", false);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (!nsMaemoNetworkManager::Startup())

@@ -9,6 +9,19 @@ MOZ_DEFAULT_NAME="./${cmdname}-bin"
 MOZ_APPRUNNER_NAME="./mozilla-bin"
 MOZ_PROGRAM=""
 
+if test $GRE_HOME; then
+    echo defined GRE_HOME=$GRE_HOME
+else
+    export GRE_HOME="/usr/lib/microb-engine"
+fi
+
+if test $DISPLAY; then
+    echo defined DISPLAY=$DISPLAY
+else
+    export DISPLAY=":0"
+fi
+
+
 exitcode=1
 #
 ##

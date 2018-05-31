@@ -24,6 +24,11 @@ interface nsINetworkLinkService : nsISupports
   const unsigned long LINK_TYPE_4G = 7;
 
   /**
+   * Try to establish a internet connection.
+   */
+  void requestConnection();
+
+  /**
    * This is set to true when the system is believed to have a usable
    * network connection.
    *

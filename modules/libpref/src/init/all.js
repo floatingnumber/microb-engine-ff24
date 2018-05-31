@@ -1831,7 +1831,7 @@ pref("editor.resizing.preserve_ratio",       true);
 pref("editor.positioning.offset",            0);
 
 pref("dom.max_chrome_script_run_time", 20);
-pref("dom.max_script_run_time", 10);
+pref("dom.max_script_run_time", 15);
 
 // If true, ArchiveReader will be enabled
 pref("dom.archivereader.enabled", false);

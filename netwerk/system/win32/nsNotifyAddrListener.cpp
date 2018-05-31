@@ -143,6 +143,12 @@ nsNotifyAddrListener::Observe(nsISupports *subject,
     return NS_OK;
 }
 
+NS_IMETHODIMP
+nsNetworkLinkService::RequestConnection()
+{
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 nsresult
 nsNotifyAddrListener::Init(void)
 {

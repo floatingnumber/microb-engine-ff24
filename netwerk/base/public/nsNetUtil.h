@@ -81,6 +81,7 @@
 #include "nsIOfflineCacheUpdate.h"
 #include "nsIContentSniffer.h"
 #include "nsCategoryCache.h"
+#include "nsINetworkLinkService.h"
 
 #include <limits>
 
@@ -2288,6 +2289,17 @@ NS_SniffContent(const char* aSnifferType, nsIRequest* aRequest,
   }
 
   aSniffedType.Truncate();
+}
+
+inline nsresult
+NS_RequestConnection()
+{
+  nsCOMPtr<nsINetworkLinkService> networkLinkService = do_GetService(NS_NETWORK_LINK_SERVICE_CONTRACTID);
+
+  if (!networkLinkService)
+    return NS_ERROR_FAILURE;
+
+  return networkLinkService->RequestConnection();
 }
 
 #endif // !nsNetUtil_h__
