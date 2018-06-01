@@ -96,7 +96,7 @@ nsMaemoNetworkManager::OpenConnectionSync()
     // protect gInternalState.  This also allows us
     // to block and wait in this method on this thread
     // until our callback on the main thread.
-    MonitorAutoEnter mon(*gMonitor);
+    ReentrantMonitorAutoEnter mon(*gReentrantMonitor);
 
     while (!gConnectionCallbackInvoked && gInternalState != InternalState_Shutdown)
       mon.Wait();

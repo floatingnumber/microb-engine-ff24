@@ -706,6 +706,7 @@ nsJSContext::DOMOperationCallback(JSContext *cx)
     return JS_TRUE;
   }
 
+  static NS_DEFINE_CID(kAppShellCID, NS_APPSHELL_CID);
   nsCOMPtr<nsIAppShell> appShell = do_GetService(kAppShellCID);
   if (appShell && sWakeUpNativeLoopOnJS) {
     nsCOMPtr<nsPIDOMWindow> win(do_QueryInterface(ctx->GetGlobalObject()));
@@ -3222,7 +3223,7 @@ ReportAllJSExceptionsPrefChangedCallback(const char* aPrefName, void* aClosure)
 static int
 WakeUpNativeLoopOnJSPrefChangedCallback(const char* aPrefName, void* aClosure)
 {
-  sWakeUpNativeLoopOnJS = nsContentUtils::GetBoolPref(aPrefName, PR_FALSE);
+  sWakeUpNativeLoopOnJS = Preferences::GetBool(aPrefName, false);
   return 0;
 }
 

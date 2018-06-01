@@ -208,9 +208,9 @@ nsBaseAppShell::ResumeNative()
 }
 
 NS_IMETHODIMP
-nsBaseAppShell::WakeupNative(PRBool mayWait)
+nsBaseAppShell::WakeupNative(bool mayWait)
 {
-  return OnProcessNextEvent(nsnull, PR_FALSE, 0);
+  return OnProcessNextEvent(nullptr, false, 0);
 }
 
 NS_IMETHODIMP
