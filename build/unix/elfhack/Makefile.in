@@ -81,8 +81,8 @@ dummy: dummy.$(OBJ_SUFFIX)
 
 libs:: dummy
 	# Will either crash or return exit code 1 if elfhack is broken
-	LD_PRELOAD=$(CURDIR)/test-array$(DLL_SUFFIX) $(CURDIR)/dummy
-	LD_PRELOAD=$(CURDIR)/test-ctors$(DLL_SUFFIX) $(CURDIR)/dummy
+	SBOX_CPUTRANSPARENCY_EXTRA_ARGS="-E LD_PRELOAD=$(CURDIR)/test-array$(DLL_SUFFIX)" $(CURDIR)/dummy
+	SBOX_CPUTRANSPARENCY_EXTRA_ARGS="-E LD_PRELOAD=$(CURDIR)/test-ctors$(DLL_SUFFIX)" $(CURDIR)/dummy
 
 GARBAGE += dummy
 endif
